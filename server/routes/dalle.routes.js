@@ -1,0 +1,41 @@
+import express from 'express';
+import * as dotenv from 'dotenv';
+import { Configuration, OpenAIApi} from 'openai';
+
+dotenv.config();
+
+const router = express.Router();
+const configuration = new Configuration({
+  apiKey: "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",
+});
+const openai = new OpenAIApi(configuration);
+
+
+router.route('/').get((req, res) => {
+  res.status(200).json({ message: "Hello from DALL.E ROUTES" })
+})
+
+router.route('/').post(async (req, res) => {
+  console.log(req.body);
+  
+
+
+  try {
+    const { prompt } = req.body;
+
+    const response = await openai.createImage({
+      prompt,
+      n: 1,
+      size: '1024x1024'
+    });
+
+    const image = response.data.data[0].url;
+
+    res.status(200).json({ photo: image });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error})
+  }
+})
+
+export default router;
